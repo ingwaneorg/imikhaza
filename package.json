@@ -1,9 +1,9 @@
 {
-  "name": "ticks2025",
+  "name": "imikhaza",
   "version": "0.4.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jcolenso/ticks2025/your-repository.git"
+    "url": "https://github.com/ingwaneorg/imikhaza.git"
   },
   "description": "Provides the missing features from WebEx Meetings",
   "main": "src/index.js",
@@ -11,7 +11,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js"
   },
-  "author": "John Colenso",
+  "author": "Ian Barbour",
   "license": "ISC",
   "dependencies": {
     "express": "^4.21.2",
