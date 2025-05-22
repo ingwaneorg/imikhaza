@@ -36,9 +36,8 @@
         }
         
         function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                alert('URL copied to clipboard!');
-            });
+            navigator.clipboard.writeText(text);
+            // no alert
         }
     </script>
     
