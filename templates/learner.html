@@ -172,6 +172,9 @@ function updateAnswer() {
 }
 
 function sendStatus(status) {
+    // Clear error message at start of every request
+    document.getElementById('error-message').style.display = 'none';
+
     updateLearner(roomCode, { status: status }).then(response => {
         if (response.success) {
             document.getElementById('current-status').innerHTML = getStatusSymbol(status);
