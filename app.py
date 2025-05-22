@@ -138,12 +138,16 @@ def tutor_page(room_code):
                          room=room_for_template,
                          base_url=request.base_url.replace('/tutor', ''))
 
+def save_debug_db():
+    if app.debug:
+        with open('d')
+
+
+
 @app.route('/<room_code>/update', methods=['POST'])
 def update_learner(room_code):
     room_code = room_code.lower()
     learner_id = session.get('learner_id')
-    
-    
     
     if not validate_room_code(room_code):
         return jsonify({'success': False, 'error': 'Invalid room code'})
