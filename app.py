@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, s
 import uuid
 import re
 import os
+import json
 from datetime import datetime
 
 app = Flask(__name__)
@@ -66,7 +67,7 @@ def learner_page(room_code):
     if room_code not in rooms:
         rooms[room_code] = {
             'code': room_code,
-            'description': f'Room {room_code}',
+            'description': f'Room {room_code.upper()}',
             'learners': {},  # Dictionary, not array
             'createdDate': datetime.now().isoformat() + 'Z'
         }
@@ -135,6 +136,12 @@ def tutor_page(room_code):
                          room=room_for_template,
                          base_url=request.base_url.replace('/tutor', ''))
 
+# Save the database if in DEBUG mode
+def save_db_json():
+    if app.debug:
+        with open('db.json', 'w') as f:
+            json.dump(rooms, f, indent=2, default=str)
+
 @app.route('/<room_code>/update', methods=['POST'])
 def update_learner(room_code):
     room_code = room_code.lower()
@@ -174,6 +181,7 @@ def update_learner(room_code):
     if 'answer' in data:
         learner['answer'] = data['answer'][:20]  # Max 20 characters
     
+    save_db_json()
     return jsonify({'success': True, 'timestamp': datetime.now().isoformat()})
 
 @app.route('/<room_code>/clear-status', methods=['POST'])

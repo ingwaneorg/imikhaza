@@ -107,11 +107,10 @@ function clearStatus() {
 }
 
 function resetLearnersAction() {
-    if (confirm('Are you sure you want to reset all learners? This cannot be undone.')) {
-        resetLearners(roomCode).then(response => {
-            if (response.success) {
-                location.reload();
-            }
+    resetLearners(roomCode).then(response => {
+        if (response.success) {
+            location.reload();
+        }
         });
     }
 }
