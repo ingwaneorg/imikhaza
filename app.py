@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import uuid
-import json
 import re
 import os
 from datetime import datetime
@@ -41,7 +40,7 @@ def intro():
 
 @app.route('/join', methods=['POST'])
 def join_room():
-    room_code = request.form.get('room_code', '').lower().strip()
+    room_code = request.form.get('room_code', '').upper().strip()
     role = request.form.get('role')  # 'learner' or 'tutor'
     
     if not room_code or not validate_room_code(room_code):
@@ -61,7 +60,7 @@ def learner_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.lower()
+    room_code = room_code.upper()
     
     # Initialize room if it doesn't exist - matching your exact structure
     if room_code not in rooms:
@@ -74,17 +73,12 @@ def learner_page(room_code):
     
     # Generate or get learner ID
     if MULTI_USER_MODE:
-        session_key = f'learner_id_{int(datetime.now().timestamp() * 1000)}'
-    else:
-        session_key = 'learner_id'
-
-    if session_key not in session:
-        session[session_key] = str(uuid.uuid4())
+        # Each tab gets a unique learner ID for testing
+        session['learner_id'] = str(uuid.uuid4())
+    elif 'learner_id' not in session:
+        session['learner_id'] = str(uuid.uuid4())
     
-    learner_id = session[session_key]
-    
-    # DEBUG
-    if app.debug: print(f'learner_id: {learner_id}')
+    learner_id = session['learner_id']
     
     # Find existing learner or create new one
     if learner_id not in rooms[room_code]['learners']:
@@ -114,7 +108,7 @@ def tutor_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.lower()
+    room_code = room_code.upper()
     
     # Initialize room if it doesn't exist - matching your structure
     if room_code not in rooms:
@@ -141,15 +135,9 @@ def tutor_page(room_code):
                          room=room_for_template,
                          base_url=request.base_url.replace('/tutor', ''))
 
-# If DEBUG then save the database to db.json
-def save_debug_db():
-    if app.debug:
-        with open('db.json', 'w') as f:
-            json.dump(rooms, f, indent=2, default=str)
-
 @app.route('/<room_code>/update', methods=['POST'])
 def update_learner(room_code):
-    room_code = room_code.lower()
+    room_code = room_code.upper()
     learner_id = session.get('learner_id')
     
     if not validate_room_code(room_code):
@@ -186,12 +174,11 @@ def update_learner(room_code):
     if 'answer' in data:
         learner['answer'] = data['answer'][:20]  # Max 20 characters
     
-    save_debug_db()  # save after each update
     return jsonify({'success': True, 'timestamp': datetime.now().isoformat()})
 
 @app.route('/<room_code>/clear-status', methods=['POST'])
 def clear_all_status(room_code):
-    room_code = room_code.lower()
+    room_code = room_code.upper()
     
     if not validate_room_code(room_code):
         return jsonify({'success': False, 'error': 'Invalid room code'})
@@ -209,7 +196,7 @@ def clear_all_status(room_code):
 
 @app.route('/<room_code>/reset-learners', methods=['POST'])
 def reset_learners(room_code):
-    room_code = room_code.lower()
+    room_code = room_code.upper()
     
     if not validate_room_code(room_code):
         return jsonify({'success': False, 'error': 'Invalid room code'})
@@ -227,7 +214,7 @@ def poll_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.lower()
+    room_code = room_code.upper()
     
     if room_code not in rooms:
         return f"Room {room_code} not found", 404
@@ -258,7 +245,7 @@ def poker_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.lower()
+    room_code = room_code.upper()
     
     if room_code not in rooms:
         return f"Room {room_code} not found", 404
@@ -309,4 +296,3 @@ def about():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
-
