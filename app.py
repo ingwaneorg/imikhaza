@@ -40,7 +40,7 @@ def intro():
 
 @app.route('/join', methods=['POST'])
 def join_room():
-    room_code = request.form.get('room_code', '').upper().strip()
+    room_code = request.form.get('room_code', '').lower().strip()
     role = request.form.get('role')  # 'learner' or 'tutor'
     
     if not room_code or not validate_room_code(room_code):
@@ -60,7 +60,7 @@ def learner_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     # Initialize room if it doesn't exist - matching your exact structure
     if room_code not in rooms:
@@ -108,7 +108,7 @@ def tutor_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     # Initialize room if it doesn't exist - matching your structure
     if room_code not in rooms:
@@ -137,7 +137,7 @@ def tutor_page(room_code):
 
 @app.route('/<room_code>/update', methods=['POST'])
 def update_learner(room_code):
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     learner_id = session.get('learner_id')
     
     if not validate_room_code(room_code):
@@ -178,7 +178,7 @@ def update_learner(room_code):
 
 @app.route('/<room_code>/clear-status', methods=['POST'])
 def clear_all_status(room_code):
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     if not validate_room_code(room_code):
         return jsonify({'success': False, 'error': 'Invalid room code'})
@@ -196,7 +196,7 @@ def clear_all_status(room_code):
 
 @app.route('/<room_code>/reset-learners', methods=['POST'])
 def reset_learners(room_code):
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     if not validate_room_code(room_code):
         return jsonify({'success': False, 'error': 'Invalid room code'})
@@ -214,7 +214,7 @@ def poll_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     if room_code not in rooms:
         return f"Room {room_code} not found", 404
@@ -245,7 +245,7 @@ def poker_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     if room_code not in rooms:
         return f"Room {room_code} not found", 404
