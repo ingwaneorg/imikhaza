@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import uuid
+import json
 import re
 import os
 from datetime import datetime
@@ -40,7 +41,7 @@ def intro():
 
 @app.route('/join', methods=['POST'])
 def join_room():
-    room_code = request.form.get('room_code', '').upper().strip()
+    room_code = request.form.get('room_code', '').lower().strip()
     role = request.form.get('role')  # 'learner' or 'tutor'
     
     if not room_code or not validate_room_code(room_code):
@@ -60,7 +61,7 @@ def learner_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     # Initialize room if it doesn't exist - matching your exact structure
     if room_code not in rooms:
@@ -73,12 +74,14 @@ def learner_page(room_code):
     
     # Generate or get learner ID
     if MULTI_USER_MODE:
-        # Each tab gets a unique learner ID for testing
-        session['learner_id'] = str(uuid.uuid4())
-    elif 'learner_id' not in session:
-        session['learner_id'] = str(uuid.uuid4())
+        session_key = f'learner_id_{int(datetime.now().timestamp() * 1000)}'
+    else:
+        session_key = 'learner_id'
+
+    if session_key not in session:
+        session[session_key] = str(uuid.uuid4())
     
-    learner_id = session['learner_id']
+    learner_id = session[session_key]
     
     # Find existing learner or create new one
     if learner_id not in rooms[room_code]['learners']:
@@ -108,7 +111,7 @@ def tutor_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     # Initialize room if it doesn't exist - matching your structure
     if room_code not in rooms:
@@ -137,8 +140,10 @@ def tutor_page(room_code):
 
 @app.route('/<room_code>/update', methods=['POST'])
 def update_learner(room_code):
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     learner_id = session.get('learner_id')
+    
+    
     
     if not validate_room_code(room_code):
         return jsonify({'success': False, 'error': 'Invalid room code'})
@@ -178,7 +183,7 @@ def update_learner(room_code):
 
 @app.route('/<room_code>/clear-status', methods=['POST'])
 def clear_all_status(room_code):
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     if not validate_room_code(room_code):
         return jsonify({'success': False, 'error': 'Invalid room code'})
@@ -196,7 +201,7 @@ def clear_all_status(room_code):
 
 @app.route('/<room_code>/reset-learners', methods=['POST'])
 def reset_learners(room_code):
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     if not validate_room_code(room_code):
         return jsonify({'success': False, 'error': 'Invalid room code'})
@@ -214,7 +219,7 @@ def poll_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     if room_code not in rooms:
         return f"Room {room_code} not found", 404
@@ -245,7 +250,7 @@ def poker_page(room_code):
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
-    room_code = room_code.upper()
+    room_code = room_code.lower()
     
     if room_code not in rooms:
         return f"Room {room_code} not found", 404
