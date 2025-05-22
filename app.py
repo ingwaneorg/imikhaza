@@ -83,6 +83,9 @@ def learner_page(room_code):
     
     learner_id = session[session_key]
     
+    # DEBUG
+    if app.debug: print(f'learner_id: {learner_id}')
+    
     # Find existing learner or create new one
     if learner_id not in rooms[room_code]['learners']:
         rooms[room_code]['learners'][learner_id] = {
@@ -138,11 +141,11 @@ def tutor_page(room_code):
                          room=room_for_template,
                          base_url=request.base_url.replace('/tutor', ''))
 
+# If DEBUG then save the database to db.json
 def save_debug_db():
     if app.debug:
-        with open('d')
-
-
+        with open('db.json', 'w') as f:
+            json.dump(rooms, f, indent=2, default=str)
 
 @app.route('/<room_code>/update', methods=['POST'])
 def update_learner(room_code):
@@ -183,6 +186,7 @@ def update_learner(room_code):
     if 'answer' in data:
         learner['answer'] = data['answer'][:20]  # Max 20 characters
     
+    save_debug_db()  # save after each update
     return jsonify({'success': True, 'timestamp': datetime.now().isoformat()})
 
 @app.route('/<room_code>/clear-status', methods=['POST'])
