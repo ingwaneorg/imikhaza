@@ -154,8 +154,11 @@ def update_learner(room_code):
         return jsonify({'success': False, 'error': 'Invalid session or room'})
     
     if learner_id not in rooms[room_code]['learners']:
-        return jsonify({'success': False, 'error': 'Learner not found'})
-    
+        print(learner_id)
+        rooms[room_code]['learners'][learner_id] = {
+            'name': '',  # starts empty
+        }
+
     data = request.get_json()
     learner = rooms[room_code]['learners'][learner_id]
     
@@ -200,6 +203,7 @@ def clear_all_status(room_code):
         learner['handUpRank'] = 0
         learner['lastCommunication'] = datetime.now().isoformat() + 'Z'
     
+    save_db_json()
     return jsonify({'success': True})
 
 @app.route('/<room_code>/reset-learners', methods=['POST'])
@@ -215,6 +219,7 @@ def reset_learners(room_code):
     # Clear all learners - reset to empty dictionary
     rooms[room_code]['learners'] = {}
     
+    save_db_json()
     return jsonify({'success': True})
 
 @app.route('/<room_code>/poll')

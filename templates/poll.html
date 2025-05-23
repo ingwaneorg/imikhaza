@@ -55,3 +55,12 @@
   </div>
 </div>
 {% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-refresh every 5 seconds
+setInterval(() => {
+    location.reload();
+}, 5000);
+</script>
+{% endblock %}
