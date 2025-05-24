@@ -88,7 +88,7 @@ def learner_page(room_code):
             # These fields get added when learner interacts
             'status': '',
             'answer': '',
-            'handUpRank': 0
+            'handUpRank': 0,
         }
     
     learner = rooms[room_code]['learners'][learner_id]
@@ -157,6 +157,7 @@ def update_learner(room_code):
         rooms[room_code]['learners'][learner_id] = {
             'name': '',  # starts empty
             'isActive': True,
+            'handUpRank': 0,
         }
 
     data = request.get_json()
@@ -175,10 +176,14 @@ def update_learner(room_code):
         
         # Handle hand-up ranking
         if data['status'] == 'hand-up':
-            # Count existing hand-ups to determine rank
-            hand_up_count = sum(1 for l in rooms[room_code]['learners'].values() 
-                              if l.get('status') == 'hand-up' and l != learner)
-            learner['handUpRank'] = hand_up_count + 1
+            # Get max hand-up value to determine next rank
+            existing_ranks = [
+                l.get('handUpRank', 0) 
+                for l in rooms[room_code]['learners'].values()
+                if l.get('status') == 'hand-up' and l != learner
+            ]
+            next_rank = max(existing_ranks, default=0) + 1
+            learner['handUpRank'] = next_rank
         else:
             learner['handUpRank'] = 0
     
@@ -226,6 +231,13 @@ def reset_learners(room_code):
     save_db_json()
     return jsonify({'success': True})
 
+# Poll is helful when sort by the status (helps with planning poker)
+def sort_key(x):
+    try:
+        return (0, float(x[0]))  # Numeric statuses first, sorted by float value
+    except ValueError:
+        return (1, x[0])  # case-sensitive sort for non-numeric keys
+
 @app.route('/<room_code>/poll')
 def poll_page(room_code):
     if not validate_room_code(room_code):
@@ -250,10 +262,14 @@ def poll_page(room_code):
     learners_list = list(rooms[room_code]['learners'].values())
     room_for_template = rooms[room_code].copy()
     room_for_template['learners'] = learners_list
+
+    # sort status numerically then alphabetically
+    sorted_status_counts = sorted(status_counts.items(), key=sort_key)
     
     return render_template('poll.html', 
                          room=room_for_template, 
                          status_counts=status_counts,
+                         sorted_status_counts=sorted_status_counts,
                          highest_count=highest_count,
                          get_status_symbol=get_status_symbol)
 
