@@ -96,8 +96,8 @@ def learner_page(room_code):
     if learner_id not in rooms[room_code]['learners']:
         rooms[room_code]['learners'][learner_id] = {
             'name': '',
-            'lastCommunication': datetime.now().isoformat() + 'Z',
             'isActive': True,
+            'lastCommunication': datetime.now().isoformat() + 'Z',
             # These fields get added when learner interacts
             'status': '',
             'answer': '',
@@ -135,9 +135,11 @@ def tutor_page(room_code):
     learners_list = []
     for learner_id, learner_data in rooms[room_code]['learners'].items():
         learner = learner_data.copy()
-        learner['id'] = learner_id
-        learner['status_symbol'] = get_status_symbol(learner.get('status', ''))
-        learners_list.append(learner)
+        # Only list active users
+        if learner['isActive'] == True:
+            learner['id'] = learner_id
+            learner['status_symbol'] = get_status_symbol(learner.get('status', ''))
+            learners_list.append(learner)
     
     # Create room object for template
     room_for_template = rooms[room_code].copy()
@@ -165,15 +167,16 @@ def update_learner(room_code):
         return jsonify({'success': False, 'error': 'Invalid session or room'})
     
     if learner_id not in rooms[room_code]['learners']:
-        print(learner_id)
         rooms[room_code]['learners'][learner_id] = {
             'name': '',  # starts empty
+            'isActive': True,
         }
 
     data = request.get_json()
     learner = rooms[room_code]['learners'][learner_id]
     
     # Update lastCommunication for any interaction
+    learner['isActive'] = True
     learner['lastCommunication'] = datetime.now().isoformat() + 'Z'
     
     # Update learner data
@@ -208,10 +211,11 @@ def clear_all_status(room_code):
     if room_code not in rooms:
         return jsonify({'success': False, 'error': 'Room not found'})
     
-    # Clear all learner statuses - working with dictionary structure
+    # Clear all learner statuses
     for learner in rooms[room_code]['learners'].values():
         learner['status'] = ''
         learner['handUpRank'] = 0
+        learner['isActive'] = True
         learner['lastCommunication'] = datetime.now().isoformat() + 'Z'
     
     save_db_json()
@@ -226,10 +230,12 @@ def reset_learners(room_code):
     
     if room_code not in rooms:
         return jsonify({'success': False, 'error': 'Room not found'})
-    
-    # Clear all learners - reset to empty dictionary
-    rooms[room_code]['learners'] = {}
-    
+
+    # Make all learners in the room inactive
+    for learner in rooms[room_code]['learners'].values():
+        learner['isActive'] = False
+        learner['lastCommunication'] = datetime.now().isoformat() + 'Z'
+        
     save_db_json()
     return jsonify({'success': True})
 

@@ -1,7 +1,7 @@
 <!-- templates/tutor.html -->
 {% extends "base.html" %}
 
-{% block title %}Poll - {{ room.code | upper}}{% endblock %}
+{% block title %}Tutor - {{ room.code | upper}}{% endblock %}
 
 {% block content %}
 <div class="main tutor">
@@ -35,22 +35,22 @@
           </thead>
           <tbody id="learners-table">
             {% for learner in room.learners %}
-            {% if learner.status or not hide_no_status %}
-            <tr class="learner {{ 'active' if learner.isActive else 'inactive' }}" data-has-status="{{ 'true' if learner.status else 'false' }}">
-              <td>
-                <span>{{ learner.name }}</span>
-              </td>
-              <td style="text-align: right;">
-                <span>{{ learner.answer }}</span>
-              </td>
-              <td class="status">
-                {% if learner.handUpRank > 0 %}
-                <span>{{ learner.handUpRank }}</span>
-                {% endif %}
-                <span>{{ learner.status_symbol|safe }}</span>
-              </td>
-             </tr>
-             {% endif %}
+              {% if learner.status or not hide_no_status %}
+              <tr class="learner {{ 'active' if learner.isActive else 'inactive' }}" data-has-status="{{ 'true' if learner.status else 'false' }}">
+                <td>
+                  <span>{{ learner.name }}</span>
+                </td>
+                <td style="text-align: right;">
+                  <span>{{ learner.answer }}</span>
+                </td>
+                <td class="status">
+                  {% if learner.handUpRank > 0 %}
+                  <span>{{ learner.handUpRank }}</span>
+                  {% endif %}
+                  <span>{{ learner.status_symbol|safe }}</span>
+                </td>
+               </tr>
+               {% endif %}
              {% endfor %}
           </tbody>
         </table>
