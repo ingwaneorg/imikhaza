@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-this-in-production'
+app.secret_key = os.environ.get('SECRET_KEY', 'fallback-for-development')
 
 # In-memory storage
 rooms = {}
