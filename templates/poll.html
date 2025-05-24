@@ -1,5 +1,8 @@
 <!-- templates/poll.html -->
 {% extends "base.html" %}
+
+{% block title %}Poll - {{ room.code | upper}}{% endblock %}
+
 {% block content %}
 <div class="main tutor">
   <div class="panel">

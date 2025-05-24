@@ -1,5 +1,8 @@
 <!-- templates/poker.html -->
 {% extends "base.html" %}
+
+{% block title %}Poker - {{ room.code | upper}}{% endblock %}
+
 {% block content %}
 <div class="row">
   <h1>Planning Poker</h1>

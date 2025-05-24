@@ -1,5 +1,14 @@
 <!-- templates/learner.html -->
 {% extends "base.html" %}
+
+{% block title %}
+    {% if learner.name %}
+        {{ learner.name }} - {{ room.code | upper}}
+    {% else %}
+        Learner - {{ room.code | upper}}
+    {% endif %}
+{% endblock %}
+
 {% block content %}
 <div class="main learner">
   <div class="panel">
