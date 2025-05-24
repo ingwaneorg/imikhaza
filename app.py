@@ -52,6 +52,24 @@ def join_room():
     else:
         return redirect(url_for('learner_page', room_code=room_code))
 
+def get_learner_id():
+    # Generate or get learner ID
+    if 'learner_id' not in session:
+        learner_uuid = str(uuid.uuid4())
+
+        if MULTI_USER_MODE:
+            # Each tab gets a unique learner ID for testing
+            time_str = datetime.now().strftime('%H:%M:%S')
+            learner_uuid += '-'+time_str
+        
+        # save learner id in Flask session cookie
+        session['learner_id'] = learner_uuid
+
+    learner_id = session['learner_id']
+    print(learner_id)
+    
+    return learner_id
+
 @app.route('/<room_code>')
 def learner_page(room_code):
     # Block any query parameters for security
@@ -63,7 +81,7 @@ def learner_page(room_code):
         
     room_code = room_code.lower()
     
-    # Initialize room if it doesn't exist - matching your exact structure
+    # Initialize room if it doesn't exist
     if room_code not in rooms:
         rooms[room_code] = {
             'code': room_code,
@@ -72,14 +90,7 @@ def learner_page(room_code):
             'createdDate': datetime.now().isoformat() + 'Z'
         }
     
-    # Generate or get learner ID
-    if MULTI_USER_MODE:
-        # Each tab gets a unique learner ID for testing
-        session['learner_id'] = str(uuid.uuid4())
-    elif 'learner_id' not in session:
-        session['learner_id'] = str(uuid.uuid4())
-    
-    learner_id = session['learner_id']
+    learner_id = get_learner_id()
     
     # Find existing learner or create new one
     if learner_id not in rooms[room_code]['learners']:
@@ -111,7 +122,7 @@ def tutor_page(room_code):
         
     room_code = room_code.lower()
     
-    # Initialize room if it doesn't exist - matching your structure
+    # Initialize room if it doesn't exist
     if room_code not in rooms:
         rooms[room_code] = {
             'code': room_code,
@@ -145,7 +156,7 @@ def save_db_json():
 @app.route('/<room_code>/update', methods=['POST'])
 def update_learner(room_code):
     room_code = room_code.lower()
-    learner_id = session.get('learner_id')
+    learner_id = get_learner_id()
     
     if not validate_room_code(room_code):
         return jsonify({'success': False, 'error': 'Invalid room code'})
@@ -306,6 +317,10 @@ def poker_page(room_code):
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.context_processor
+def utility_processor():
+    return dict(get_status_symbol=get_status_symbol)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
