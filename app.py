@@ -8,10 +8,7 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-change-this-in-production'
 
-# Multi-user testing mode (for simulating multiple learners in different tabs)
-MULTI_USER_MODE = os.environ.get('DEBUG', 'False').lower() == 'true' or os.environ.get('MULTI_USER_MODE', 'False').lower() == 'true'
-
-# In-memory storage - matches your Node.js structure exactly
+# In-memory storage
 rooms = {}
 
 def validate_room_code(room_code):
@@ -53,22 +50,12 @@ def join_room():
         return redirect(url_for('learner_page', room_code=room_code))
 
 def get_learner_id():
-    # Generate or get learner ID
     if 'learner_id' not in session:
+        # Generate a unique code for each user
         learner_uuid = str(uuid.uuid4())
-
-        if MULTI_USER_MODE:
-            # Each tab gets a unique learner ID for testing
-            time_str = datetime.now().strftime('%H:%M:%S')
-            learner_uuid += '-'+time_str
-        
-        # save learner id in Flask session cookie
         session['learner_id'] = learner_uuid
 
-    learner_id = session['learner_id']
-    print(learner_id)
-    
-    return learner_id
+    return session['learner_id']
 
 @app.route('/<room_code>')
 def learner_page(room_code):
@@ -126,7 +113,7 @@ def tutor_page(room_code):
     if room_code not in rooms:
         rooms[room_code] = {
             'code': room_code,
-            'description': f'Room {room_code}',
+            'description': f'Room {room_code.upper()}',
             'learners': {},  # Dictionary, not array
             'createdDate': datetime.now().isoformat() + 'Z'
         }
