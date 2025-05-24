@@ -33,7 +33,7 @@
         </div>
         <div class="status poker">
           <div class="row2">
-            {{ stats.min if stats.min is not none else '-' }}
+            {{ stats.get('min', '--') }}
           </div>
         </div>
         <div class="row">lowest estimate</div>
@@ -48,7 +48,7 @@
         </div>
         <div class="status poker">
           <div class="row2">
-            {{ stats.max if stats.max is not none else '-' }}
+            {{ stats.get('max', '--') }}
           </div>
         </div>
         <div class="row">highest estimate</div>
@@ -81,4 +81,8 @@
 
   </div>
 </div>
+
+
+<pre>{{ stats | tojson }}</pre>
+
 {% endblock %}

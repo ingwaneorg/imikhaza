@@ -295,9 +295,12 @@ def poker_page(room_code):
     consensus_votes = 0
     
     if poker_values:
+        min_val = min(poker_values)
+        max_val = max(poker_values)
+
+        stats['min'] = int(min_val) if min_val % 1 == 0 else min_val
+        stats['max'] = int(max_val) if max_val % 1 == 0 else max_val
         stats['count'] = len(poker_values)
-        stats['min'] = min(poker_values)
-        stats['max'] = max(poker_values)
         stats['average'] = sum(poker_values) / len(poker_values)
         stats['values'] = sorted(poker_values)
         
