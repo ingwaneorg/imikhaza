@@ -8,6 +8,10 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'fallback-for-development')
 
+# Limit the number of rooms and number of active learners per room
+MAX_ROOMS = 10
+MAX_LEARNERS_PER_ROOM = 20
+
 # In-memory storage
 rooms = {}
 
@@ -68,15 +72,16 @@ def learner_page(room_code):
         
     room_code = room_code.lower()
     
-    # Initialize room if it doesn't exist
+    # Show an 404 error if tutor hasn't created the room
     if room_code not in rooms:
-        rooms[room_code] = {
-            'code': room_code,
-            'description': f'Room {room_code.upper()}',
-            'learners': {},  # Dictionary, not array
-            'createdDate': datetime.now().isoformat() + 'Z'
-        }
-    
+        return "Room not found", 404
+
+    # Limit how many active learners can be in a room
+    room = rooms[room_code]      
+    active_learners = [l for l in room['learners'].values() if l.get('isActive')]
+    if len(active_learners) >= MAX_LEARNERS_PER_ROOM:
+        return "Room is full", 403  # or 429 Too Many Requests
+
     learner_id = get_learner_id()
     
     # Find existing learner or create new one
@@ -111,6 +116,10 @@ def tutor_page(room_code):
     
     # Initialize room if it doesn't exist
     if room_code not in rooms:
+        # Limit number of rooms
+        if len(rooms) >= MAX_ROOMS:
+            return "Maximum number of rooms reached", 403
+
         rooms[room_code] = {
             'code': room_code,
             'description': f'Room {room_code.upper()}',
