@@ -346,6 +346,26 @@ def poker_page(room_code):
                          consensus=consensus,
                          consensus_votes=consensus_votes)
 
+@app.route("/api")
+def block_api_root():
+    return "Access to /api is not allowed", 403
+
+@app.route("/api/rooms")
+def api_rooms():
+    room_summaries = []
+
+    for room_code, room in rooms.items():
+        learners = room.get('learners', {}).values()
+        active_count = sum(1 for learner in learners if learner.get('isActive'))
+        room_summaries.append({
+            'code': room_code,
+            'description': room.get('description', ''),
+            'active_learners': active_count,
+            'created_date': room.get('createdDate'),
+        })
+
+    return jsonify(room_summaries)
+
 @app.route('/about')
 def about():
     return render_template('about.html')
