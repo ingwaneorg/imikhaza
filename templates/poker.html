@@ -16,7 +16,7 @@
 
       <!-- Count box -->
       <div class="section stat-box">
-        <div class="row">
+        <div class="row3">
           <h2>Votes</h2>
         </div>
         <div class="status poker">
@@ -24,14 +24,14 @@
             {{ stats.count or 0 }}
           </div>
         </div>
-        <div class="row">out of {{ total_learners }}</div>
+        <div class="row3">out of {{ total_learners }}</div>
       </div>
 
       <div class="col-gap"></div> <!-- Gap between boxes -->
 
       <!-- Minimum box -->
       <div class="section stat-box">
-        <div class="row">
+        <div class="row3">
           <h2>Min</h2>
         </div>
         <div class="status poker">
@@ -39,14 +39,14 @@
             {{ stats.get('min', '--') }}
           </div>
         </div>
-        <div class="row">lowest estimate</div>
+        <div class="row3">lowest estimate</div>
       </div>
 
       <div class="col-gap"></div> <!-- Gap between boxes -->
 
       <!-- Maximum box -->
       <div class="section stat-box">
-        <div class="row">
+        <div class="row3">
           <h2>Max</h2>
         </div>
         <div class="status poker">
@@ -54,14 +54,14 @@
             {{ stats.get('max', '--') }}
           </div>
         </div>
-        <div class="row">highest estimate</div>
+        <div class="row3">highest estimate</div>
       </div>
 
       <div class="col-gap"></div> <!-- Gap between boxes -->
 
       <!-- Consensus box -->
       <div class="section stat-box {{ 'full-agreement' if consensus == 100 else '' }}">
-        <div class="row">
+        <div class="row3">
           <h2>Consensus</h2>
         </div>
         <div class="status poker">
@@ -69,15 +69,13 @@
             {{ consensus }}%
           </div>
         </div>
-        {% if consensus == 100 %}
-        <div class="row">
-          🎉 Full agreement!
+        <div class="row3">
+          {% if consensus == 100 %}
+            🎉 Full agreement!
+          {% else %}
+            {{ consensus_votes }} out of {{ stats.count or 0 }} agree
+          {% endif %}
         </div>
-        {% else %}
-        <div class="row">
-          {{ consensus_votes }} out of {{ stats.count or 0 }} agree
-        </div>
-        {% endif %}
       </div>
 
     </div>

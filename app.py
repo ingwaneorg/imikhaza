@@ -123,7 +123,7 @@ def tutor_page(room_code):
     for learner_id, learner_data in rooms[room_code]['learners'].items():
         learner = learner_data.copy()
         # Only list active users
-        if learner['isActive'] == True:
+        if learner['isActive']:
             learner['id'] = learner_id
             learner['status_symbol'] = get_status_symbol(learner.get('status', ''))
             learners_list.append(learner)
@@ -248,9 +248,12 @@ def poll_page(room_code):
     if room_code not in rooms:
         return f"Room {room_code} not found", 404
     
-    # Count responses by status - working with dictionary structure
+    # Count responses by status
     status_counts = {}
     for learner in rooms[room_code]['learners'].values():
+        # Skip inactive learners
+        if not learner.get('isActive'):
+            continue
         status = learner.get('status', '')
         if status:
             status_counts[status] = status_counts.get(status, 0) + 1
@@ -258,8 +261,14 @@ def poll_page(room_code):
     # Find highest count for green highlighting
     highest_count = max(status_counts.values()) if status_counts else 0
     
-    # Convert learners dict to list for template
+    # Get a list of active learners
     learners_list = list(rooms[room_code]['learners'].values())
+    learners_list = [
+        learner for learner in rooms[room_code]['learners'].values()
+        if learner.get('isActive')
+    ]
+    
+    # Convert learners dict to list for template
     room_for_template = rooms[room_code].copy()
     room_for_template['learners'] = learners_list
 
@@ -283,11 +292,22 @@ def poker_page(room_code):
     if room_code not in rooms:
         return f"Room {room_code} not found", 404
     
-    # Get poker values (numeric responses) - working with dictionary structure
+    # Get poker values (numeric responses)
     poker_values = []
     total_learners = len(rooms[room_code]['learners'])
+
+    # Count active learners
+    total_learners = sum(
+        1 for learner in rooms[room_code]['learners'].values()
+        if learner.get('isActive')
+    )
     
     for learner in rooms[room_code]['learners'].values():
+        # Skip inactive learners
+        if not learner.get('isActive'):
+            continue
+        
+        # Only use numeric statuses  
         status = learner.get('status', '')
         if status and (status.replace('.', '').replace('?', '').isdigit() or status == '0.5'):
             try:
@@ -295,7 +315,7 @@ def poker_page(room_code):
                     poker_values.append(0.5)
                 elif status != '?':
                     poker_values.append(float(status))
-            except:
+            except (ValueError, TypeError):
                 pass
     
     # Calculate statistics
