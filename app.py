@@ -293,6 +293,8 @@ def poll_page(room_code):
 
 @app.route('/<room_code>/poker')
 def poker_page(room_code):
+    show_values = request.args.get('show', 'false').lower() == 'true'    
+
     if not validate_room_code(room_code):
         return "Invalid room code", 400
         
@@ -347,13 +349,30 @@ def poker_page(room_code):
             most_common_count = max(poker_values.count(x) for x in set(poker_values))
             consensus = round((most_common_count / len(poker_values)) * 100)
             consensus_votes = most_common_count
+
+    # Get learner estimates
+    # Example mock data - replace with your real data logic later
+    learner_estimates = [
+        {"name": "Alice", "estimate": 5},
+        {"name": "Bob1", "estimate": 8},
+        {"name": "Bob2", "estimate": 8},
+        {"name": "Bob3", "estimate": 8},
+        {"name": "Charlie1", "estimate": ""},
+        {"name": "Charlie2", "estimate": 13},
+        {"name": "Charlie3", "estimate": ""},
+        {"name": "William", "estimate": 100},
+    ]
+
     
     return render_template('poker.html', 
-                         room=rooms[room_code], 
-                         stats=stats,
-                         total_learners=total_learners,
-                         consensus=consensus,
-                         consensus_votes=consensus_votes)
+            room=rooms[room_code], 
+            stats=stats,
+            total_learners=total_learners,
+            consensus=consensus,
+            consensus_votes=consensus_votes,
+            learner_estimates=learner_estimates,
+            show_values=show_values,
+            )
 
 @app.route("/api")
 def block_api_root():
