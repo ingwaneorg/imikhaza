@@ -336,7 +336,7 @@ def poker_page(room_code):
         stats['min'] = int(min_val) if min_val % 1 == 0 else min_val
         stats['max'] = int(max_val) if max_val % 1 == 0 else max_val
         stats['count'] = len(poker_values)
-        stats['average'] = sum(poker_values) / len(poker_values)
+        stats['average'] = round(sum(poker_values)/len(poker_values),1)
         stats['values'] = sorted(poker_values)
         
         # Calculate consensus (most common value percentage)
@@ -370,7 +370,7 @@ def poker_page(room_code):
         })
 
     # Add mock data for testing
-    for i in range(12):
+    for i in range(4):
         learner_estimates.append({
             "name": f"Mock{i+1}",
             "estimate": "" if i % 2 == 0 else 5 

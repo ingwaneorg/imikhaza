@@ -108,6 +108,21 @@
 
       <div class="col-gap"></div> <!-- Gap between boxes -->
 
+      <!-- Average box -->
+      <div class="section stat-box">
+        <div class="row3">
+          <h2>Average</h2>
+        </div>
+        <div class="status poker">
+          <div class="row2">
+            {{ stats.get('average', '--') }}
+          </div>
+        </div>
+        <div class="row3">average</div>
+      </div>
+
+      <div class="col-gap"></div> <!-- Gap between boxes -->
+
       <!-- Consensus box -->
       <div class="section stat-box {{ 'full-agreement' if consensus == 100 else '' }}">
         <div class="row3">
