@@ -1,11 +1,11 @@
 <!-- templates/poker.html -->
 {% extends "base.html" %}
 
-{% block title %}Poker - {{ room.code | upper}}{% endblock %}
+{% block title %}Planning Poker - {{ room.code | upper}}{% endblock %}
 
 {% block content %}
 <div class="row">
-  <h1>Planning Poker</h1>
+  <h1>{{ room.code | upper }} ~ Planning Poker</h1>
   <div class="col-gap"></div>
   <div class="col-gap"></div>
   <a href="?show=true">
@@ -20,18 +20,30 @@
 
 <!-- ESTIMATES -->
 <div class="main tutor">
-  <div class="row">
+  <div class="cards-container">
     {% for learner in learner_estimates %}
-      <div class="card">
+      <div class="card {% if learner.estimate not in ('','away','coffee','?') %}has-estimate{% else %}no-estimate{% endif %}">
         <div class="row3">
-          <h2>{{ learner.name }}</h2>
+          <h3>{{ learner.name | default('-', true) }}</h3>
         </div>
         <div class="status poker">
           <div class="row2">
             {% if show_values %}
-              {{ learner.estimate }}
+              {% if learner.estimate not in ('','away','coffee','?') %}
+                {{ learner.estimate }}
+              {% endif %}
             {% else %}
-              <div class="card-back {% if learner.estimate == '' %}no-estimate{% endif %}"></div>
+              <div class="card-back 
+                  {% if learner.estimate == '' %} no-estimate {% endif %}
+                  {% if learner.estimate == '?' %} card-unknown {% endif %}
+                  {% if learner.estimate in ('away','coffee') %} card-break {% endif %}
+              ">
+                {% if learner.estimate in ('away','coffee') %}
+                  ☕
+                {% elif learner.estimate == '?' %}
+                  ?
+                {% endif %}
+              </div>
             {% endif %}
           </div>
         </div>
@@ -45,7 +57,7 @@
 
 <!-- STATISTICS -->
 {% if show_values %}
-<div class="row-gap" style="height: 30px;"></div>
+<div class="row-gap" style="height: 20px;"></div>
 <div class="main learner">
   <div class="panel poker">
 

@@ -11,6 +11,8 @@ app.secret_key = os.environ.get('SECRET_KEY', 'fallback-for-development')
 # Limit the number of rooms and number of active learners per room
 MAX_ROOMS = 10
 MAX_LEARNERS_PER_ROOM = 20
+ALLOWED_ESTIMATES = {'0', '0.5', '1', '2', '3', '5', '8', '13', '20'}
+
 
 # In-memory storage
 rooms = {}
@@ -299,7 +301,6 @@ def poker_page(room_code):
         return "Invalid room code", 400
         
     room_code = room_code.lower()
-    
     if room_code not in rooms:
         return f"Room {room_code} not found", 404
     
@@ -318,17 +319,11 @@ def poker_page(room_code):
         if not learner.get('isActive'):
             continue
         
-        # Only use numeric statuses  
+        # Only use numeric statuses
         status = learner.get('status', '')
-        if status and (status.replace('.', '').replace('?', '').isdigit() or status == '0.5'):
-            try:
-                if status == '0.5':
-                    poker_values.append(0.5)
-                elif status != '?':
-                    poker_values.append(float(status))
-            except (ValueError, TypeError):
-                pass
-    
+        if status in ALLOWED_ESTIMATES:
+            poker_values.append(float(status))
+   
     # Calculate statistics
     stats = {}
     consensus = 0
@@ -351,19 +346,37 @@ def poker_page(room_code):
             consensus_votes = most_common_count
 
     # Get learner estimates
-    # Example mock data - replace with your real data logic later
-    learner_estimates = [
-        {"name": "Alice", "estimate": 5},
-        {"name": "Bob1", "estimate": 8},
-        {"name": "Bob2", "estimate": 8},
-        {"name": "Bob3", "estimate": 8},
-        {"name": "Charlie1", "estimate": ""},
-        {"name": "Charlie2", "estimate": 13},
-        {"name": "Charlie3", "estimate": ""},
-        {"name": "William", "estimate": 100},
-    ]
+    learner_estimates = []
+    for learner in rooms[room_code]['learners'].values():
+        if not learner.get('isActive'):
+            continue
 
-    
+        name = learner.get('name', 'Unknown')
+        status = learner.get('status', '').strip()
+
+        if status in ALLOWED_ESTIMATES:
+            estimate = float(status)
+            if estimate.is_integer():
+                estimate = int(estimate)
+        else:
+            if status in ('away','coffee','?'):
+                estimate = status
+            else:
+                estimate = ''
+
+        learner_estimates.append({
+            "name": name,
+            "estimate": estimate,
+        })
+
+    # Add mock data for testing
+    for i in range(12):
+        learner_estimates.append({
+            "name": f"Mock{i+1}",
+            "estimate": "" if i % 2 == 0 else 5 
+    })
+
+
     return render_template('poker.html', 
             room=rooms[room_code], 
             stats=stats,
