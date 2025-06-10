@@ -38,7 +38,7 @@
               {% if learner.status or not hide_no_status %}
               <tr class="learner {{ 'active' if learner.isActive else 'inactive' }}" data-has-status="{{ 'true' if learner.status else 'false' }}">
                 <td>
-                  <span>{{ learner.name }}</span>
+                  <span>{{ learner.name | default('–', true) }}</span>
                 </td>
                 <td style="text-align: right;">
                   <span>{{ learner.answer }}</span>
