@@ -339,6 +339,9 @@ def poker_page(room_code):
         stats['average'] = round(sum(poker_values)/len(poker_values),1)
         stats['values'] = sorted(poker_values)
         
+        # Show the average calculation
+        avg_text = f"Avg = {sum(poker_values)} / {len(poker_values)}"
+    
         # Calculate consensus (most common value percentage)
         if poker_values:
             most_common_count = max(poker_values.count(x) for x in set(poker_values))
@@ -385,6 +388,7 @@ def poker_page(room_code):
             consensus_votes=consensus_votes,
             learner_estimates=learner_estimates,
             show_values=show_values,
+            average_text=avg_text,
             )
 
 @app.route("/api")
