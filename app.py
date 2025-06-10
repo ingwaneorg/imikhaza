@@ -325,7 +325,7 @@ def poker_page(room_code):
             poker_values.append(float(status))
    
     # Calculate statistics
-    avg_text = 'Average'
+    avg_text = 'no average'
     stats = {}
     consensus = 0
     consensus_votes = 0
