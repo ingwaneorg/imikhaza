@@ -367,7 +367,7 @@ def poker_page(room_code):
             if estimate.is_integer():
                 estimate = int(estimate)
         else:
-            if status in ('away','coffee','?'):
+            if status in ('away','coffee','?','hand-up'):
                 estimate = status
             else:
                 estimate = ''
