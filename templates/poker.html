@@ -35,13 +35,15 @@
             {% else %}
               <div class="card-back 
                   {% if learner.estimate == '' %} no-estimate {% endif %}
-                  {% if learner.estimate == '?' %} card-unknown {% endif %}
+                  {% if learner.estimate in ('?','hand-up') %} card-unknown {% endif %}
                   {% if learner.estimate in ('away','coffee') %} card-break {% endif %}
               ">
                 {% if learner.estimate in ('away','coffee') %}
                   ☕
                 {% elif learner.estimate == '?' %}
                   ?
+                {% elif learner.estimate == 'hand-up' %}
+                  <i class="far fa-hand-paper"></i>
                 {% endif %}
               </div>
             {% endif %}
