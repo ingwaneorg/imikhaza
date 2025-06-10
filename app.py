@@ -348,6 +348,10 @@ def poker_page(room_code):
             most_common_count = max(poker_values.count(x) for x in set(poker_values))
             consensus = round((most_common_count / len(poker_values)) * 100)
             consensus_votes = most_common_count
+            # if common count is 1 then NO consensus
+            if most_common_count == 1:
+                consensus = 0
+                consensus_votes = 0
 
     # Get learner estimates
     learner_estimates = []
