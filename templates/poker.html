@@ -22,7 +22,7 @@
 <div class="main tutor">
   <div class="cards-container">
     {% for learner in learner_estimates %}
-      <div class="card {% if learner.estimate not in ('','away','coffee','?') %}has-estimate{% else %}no-estimate{% endif %}">
+      <div class="card {% if learner.estimate not in ('','away','coffee','?','hand-up') %}has-estimate{% else %}no-estimate{% endif %}">
         <div class="row3">
           <h3>{{ learner.name | default('-', true) }}</h3>
         </div>
