@@ -373,12 +373,12 @@ def poker_page(room_code):
         })
 
     # Add mock data for testing
-    for i in range(4):
-        learner_estimates.append({
-            "name": f"Mock{i+1}",
-            "estimate": "" if i % 2 == 0 else 5 
-    })
-
+    if app.debug:
+        for i in range(6):
+            learner_estimates.append({
+                "name": f"Mock{i+1}",
+                "estimate": "" if i % 2 == 0 else 5 
+            })
 
     return render_template('poker.html', 
             room=rooms[room_code], 
