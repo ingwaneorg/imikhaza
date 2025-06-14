@@ -1,17 +1,106 @@
 #!/bin/bash
 
-echo "Deploying imikhaza to Google Cloud Run..."
+# Simple deployment script for Flask apps to Google Cloud Run
+# Assumes project, service account, and all files already exist
 
-# Build and deploy to Cloud Run
-gcloud run deploy imikhaza \
-  --source . \
-  --platform managed \
-  --region us-east1 \
-  --allow-unauthenticated \
-  --max-instances 1 \
-  --memory 512Mi \
-  --cpu 1 \
-  --timeout 300
+set -e  # Exit on any error
 
-echo "Deployment complete!"
-echo "Your app will be available at the URL shown above."
+# ============================================================================
+# CONFIGURATION - Update these for each project
+# ============================================================================
+PROJECT_ID="your-project-id"
+SERVICE_NAME="your-service-name" 
+SERVICE_ACCOUNT_KEY="~/gcp-keys/${PROJECT_ID}-key.json"
+REGION="us-east1"
+
+# ============================================================================
+# DEPLOYMENT SCRIPT - No changes needed below
+# ============================================================================
+
+# Colours
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+print_status() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Validate prerequisites
+print_status "Validating prerequisites..."
+
+# Check required files exist
+required_files=("app.py" "requirements.txt")
+for file in "${required_files[@]}"; do
+    if [ ! -f "$file" ]; then
+        print_error "Required file '$file' not found in current directory!"
+        exit 1
+    fi
+done
+
+# Check service account key exists
+if [ ! -f "$SERVICE_ACCOUNT_KEY" ]; then
+    print_error "Service account key not found: $SERVICE_ACCOUNT_KEY"
+    print_error "Please ensure the service account key exists"
+    exit 1
+fi
+
+print_success "All required files found"
+
+# Authenticate with Google Cloud
+print_status "Authenticating with Google Cloud..."
+gcloud auth activate-service-account --key-file="$SERVICE_ACCOUNT_KEY"
+gcloud config set project "$PROJECT_ID"
+
+# Verify project exists and is accessible
+if ! gcloud projects describe "$PROJECT_ID" &>/dev/null; then
+    print_error "Project '$PROJECT_ID' not found or not accessible"
+    print_error "Please verify the project exists and service account has access"
+    exit 1
+fi
+
+print_success "Authentication successful, project verified"
+
+# Deploy to Cloud Run
+print_status "Deploying '$SERVICE_NAME' to Cloud Run..."
+
+if gcloud run deploy "$SERVICE_NAME" \
+    --source . \
+    --platform managed \
+    --region "$REGION" \
+    --allow-unauthenticated \
+    --max-instances 1 \
+    --memory 512Mi \
+    --timeout 300 \
+    --quiet; then
+    
+    print_success "Deployment completed successfully!"
+    
+    # Get and display service URL
+    SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" \
+        --region="$REGION" \
+        --format="value(status.url)")
+    
+    print_success "Service available at: $SERVICE_URL"
+    
+    # Save URL for reference
+    echo "$SERVICE_URL" > last_deployment_url.txt
+    print_status "Service URL saved to: last_deployment_url.txt"
+    
+else
+    print_error "Deployment failed!"
+    exit 1
+fi
+
+print_success "Deployment complete!"
+
+# EOF
