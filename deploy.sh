@@ -8,10 +8,11 @@ set -e  # Exit on any error
 # ============================================================================
 # CONFIGURATION - Update these for each project
 # ============================================================================
-PROJECT_ID="your-project-id"
-SERVICE_NAME="your-service-name" 
-SERVICE_ACCOUNT_KEY="~/gcp-keys/${PROJECT_ID}-key.json"
+PROJECT_ID="ingwane-imikhaza"
+SERVICE_NAME="imikhaza"
 REGION="us-east1"
+
+SERVICE_ACCOUNT_KEY="~/gcp-keys/${PROJECT_ID}-key.json"
 
 # ============================================================================
 # DEPLOYMENT SCRIPT - No changes needed below
