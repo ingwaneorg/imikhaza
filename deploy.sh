@@ -9,10 +9,9 @@ set -e  # Exit on any error
 # CONFIGURATION - Update these for each project
 # ============================================================================
 PROJECT_ID="ingwane-imikhaza"
-SERVICE_NAME="imikhaza"
+SERVICE_NAME="imikhaza" 
+SERVICE_ACCOUNT_KEY="~/.gcp-keys/ingwane-imikhaza-key.json"
 REGION="us-east1"
-
-SERVICE_ACCOUNT_KEY="~/gcp-keys/${PROJECT_ID}-key.json"
 
 # ============================================================================
 # DEPLOYMENT SCRIPT - No changes needed below
@@ -48,14 +47,14 @@ for file in "${required_files[@]}"; do
     fi
 done
 
+print_success "All required files found"
+
 # Check service account key exists
 if [ ! -f "$SERVICE_ACCOUNT_KEY" ]; then
     print_error "Service account key not found: $SERVICE_ACCOUNT_KEY"
     print_error "Please ensure the service account key exists"
     exit 1
 fi
-
-print_success "All required files found"
 
 # Authenticate with Google Cloud
 print_status "Authenticating with Google Cloud..."
