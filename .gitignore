@@ -1,4 +1,5 @@
 # this project
+last_deployment_url.txt
 logs/*
 *.json
 bin/*
