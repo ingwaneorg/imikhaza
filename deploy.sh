@@ -10,8 +10,9 @@ set -e  # Exit on any error
 # ============================================================================
 PROJECT_ID="ingwane-imikhaza"
 SERVICE_NAME="imikhaza" 
-SERVICE_ACCOUNT_KEY="$HOME/.gcp-keys/ingwane-imikhaza-key.json"
 REGION="us-east1"
+
+SERVICE_ACCOUNT_KEY="${HOME}/.gcp-keys/${PROJECT_ID}-key.json"
 
 # ============================================================================
 # DEPLOYMENT SCRIPT - No changes needed below
@@ -37,6 +38,18 @@ print_error() {
 
 # Validate prerequisites
 print_status "Validating prerequisites..."
+
+# SECRET KEY
+filename="$HOME/.flask_secret_key"
+if [ ! -f ${filename} ]; then
+    print_error "Required file '$filename' not found!"
+    exit 1
+fi
+SECRET_KEY=$(cat $filename)
+
+echo $SECRET_KEY
+exit
+
 
 # Check required files exist
 required_files=("app.py" "requirements.txt")
