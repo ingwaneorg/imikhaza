@@ -81,6 +81,7 @@ if gcloud run deploy "$SERVICE_NAME" \
     --max-instances 1 \
     --memory 512Mi \
     --timeout 300 \
+    --set-env-vars SECRET_KEY="your-production-secret-key-here" \
     --quiet; then
     
     print_success "Deployment completed successfully!"
@@ -102,5 +103,3 @@ else
 fi
 
 print_success "Deployment complete!"
-
-# EOF
