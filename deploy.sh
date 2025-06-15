@@ -45,11 +45,7 @@ if [ ! -f ${filename} ]; then
     print_error "Required file '$filename' not found!"
     exit 1
 fi
-SECRET_KEY=$(cat $filename)
-
-echo $SECRET_KEY
-exit
-
+SECRET_KEY=$(head -n 1 $filename)
 
 # Check required files exist
 required_files=("app.py" "requirements.txt")
@@ -94,7 +90,7 @@ if gcloud run deploy "$SERVICE_NAME" \
     --max-instances 1 \
     --memory 512Mi \
     --timeout 300 \
-    --set-env-vars SECRET_KEY="your-production-secret-key-here" \
+    --set-env-vars SECRET_KEY="$SECRET_KEY" \
     --quiet; then
     
     print_success "Deployment completed successfully!"
