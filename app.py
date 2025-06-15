@@ -201,7 +201,7 @@ def update_learner(room_code):
     if 'answer' in data:
         learner['answer'] = data['answer'][:20]  # Max 20 characters
     
-    #save_db_json()
+    save_db_json()
     return jsonify({'success': True, 'timestamp': datetime.now().isoformat()})
 
 @app.route('/<room_code>/clear-status', methods=['POST'])
@@ -221,7 +221,7 @@ def clear_all_status(room_code):
         learner['isActive'] = True
         learner['lastCommunication'] = datetime.now().isoformat() + 'Z'
     
-    #save_db_json()
+    save_db_json()
     return jsonify({'success': True})
 
 @app.route('/<room_code>/reset-learners', methods=['POST'])
@@ -239,7 +239,7 @@ def reset_learners(room_code):
         learner['isActive'] = False
         learner['lastCommunication'] = datetime.now().isoformat() + 'Z'
         
-    #save_db_json()
+    save_db_json()
     return jsonify({'success': True})
 
 # Poll is helful when sort by the status (helps with planning poker)
