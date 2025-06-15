@@ -378,12 +378,12 @@ def poker_page(room_code):
         })
 
     # Add mock data for testing
-    #if app.debug:
-    #    for i in range(6):
-    #        learner_estimates.append({
-    #            "name": f"Mock{i+1}",
-    #            "estimate": "" if i % 2 == 0 else 5 
-    #        })
+    if app.debug:
+        for i in range(6):
+            learner_estimates.append({
+                "name": f"Mock{i+1}",
+                "estimate": "" if i % 2 == 0 else 5 
+            })
 
     return render_template('poker.html', 
             room=rooms[room_code], 
@@ -425,4 +425,6 @@ def utility_processor():
     return dict(get_status_symbol=get_status_symbol)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    port = int(os.environ.get('PORT', 8080))
+    debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(host='0.0.0.0', port=port, debug=debug)
