@@ -5,6 +5,10 @@ import os
 import json
 from datetime import datetime
 
+# Get the version number
+from version import __version__
+
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'fallback-for-development')
 
@@ -319,6 +323,10 @@ def about():
 @app.context_processor
 def utility_processor():
     return dict(get_status_symbol=get_status_symbol)
+
+@app.route('/version')
+def version():
+    return __version__, 200
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
