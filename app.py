@@ -5,13 +5,16 @@ import os
 import json
 from datetime import datetime
 
+# Get the version number
+from version import __version__
+
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'fallback-for-development')
 
 # Limit the number of rooms and number of active learners per room
 MAX_ROOMS = 10
 MAX_LEARNERS_PER_ROOM = 20
-ALLOWED_ESTIMATES = {'0', '0.5', '1', '2', '3', '5', '8', '13', '20'}
 
 
 # In-memory storage
@@ -242,7 +245,7 @@ def reset_learners(room_code):
     save_db_json()
     return jsonify({'success': True})
 
-# Poll is helful when sort by the status (helps with planning poker)
+# Poll sort by the status 
 def sort_key(x):
     try:
         return (0, float(x[0]))  # Numeric statuses first, sorted by float value
@@ -293,109 +296,6 @@ def poll_page(room_code):
                          highest_count=highest_count,
                          get_status_symbol=get_status_symbol)
 
-@app.route('/<room_code>/poker')
-def poker_page(room_code):
-    show_values = request.args.get('show', 'false').lower() == 'true'    
-
-    if not validate_room_code(room_code):
-        return "Invalid room code", 400
-        
-    room_code = room_code.lower()
-    if room_code not in rooms:
-        return f"Room {room_code} not found", 404
-    
-    # Get poker values (numeric responses)
-    poker_values = []
-    total_learners = len(rooms[room_code]['learners'])
-
-    # Count active learners
-    total_learners = sum(
-        1 for learner in rooms[room_code]['learners'].values()
-        if learner.get('isActive')
-    )
-    
-    for learner in rooms[room_code]['learners'].values():
-        # Skip inactive learners
-        if not learner.get('isActive'):
-            continue
-        
-        # Only use numeric statuses
-        status = learner.get('status', '')
-        if status in ALLOWED_ESTIMATES:
-            poker_values.append(float(status))
-   
-    # Calculate statistics
-    avg_text = 'no average'
-    stats = {}
-    consensus = 0
-    consensus_votes = 0
-    
-    if poker_values:
-        min_val = min(poker_values)
-        max_val = max(poker_values)
-
-        stats['min'] = int(min_val) if min_val % 1 == 0 else min_val
-        stats['max'] = int(max_val) if max_val % 1 == 0 else max_val
-        stats['count'] = len(poker_values)
-        stats['average'] = round(sum(poker_values)/len(poker_values),1)
-        stats['values'] = sorted(poker_values)
-        
-        # Show the average calculation
-        avg_text = f"Avg = {sum(poker_values)} / {len(poker_values)}"
-    
-        # Calculate consensus (most common value percentage)
-        if poker_values:
-            most_common_count = max(poker_values.count(x) for x in set(poker_values))
-            consensus = round((most_common_count / len(poker_values)) * 100)
-            consensus_votes = most_common_count
-            # if common count is 1 then NO consensus
-            if most_common_count == 1:
-                consensus = 0
-                consensus_votes = 0
-
-    # Get learner estimates
-    learner_estimates = []
-    for learner in rooms[room_code]['learners'].values():
-        if not learner.get('isActive'):
-            continue
-
-        name = learner.get('name', 'Unknown')
-        status = learner.get('status', '').strip()
-
-        if status in ALLOWED_ESTIMATES:
-            estimate = float(status)
-            if estimate.is_integer():
-                estimate = int(estimate)
-        else:
-            if status in ('away','coffee','?','hand-up'):
-                estimate = status
-            else:
-                estimate = ''
-
-        learner_estimates.append({
-            "name": name,
-            "estimate": estimate,
-        })
-
-    # Add mock data for testing
-    if app.debug:
-        for i in range(6):
-            learner_estimates.append({
-                "name": f"Mock{i+1}",
-                "estimate": "" if i % 2 == 0 else 5 
-            })
-
-    return render_template('poker.html', 
-            room=rooms[room_code], 
-            stats=stats,
-            total_learners=total_learners,
-            consensus=consensus,
-            consensus_votes=consensus_votes,
-            learner_estimates=learner_estimates,
-            show_values=show_values,
-            average_text=avg_text,
-            )
-
 @app.route("/api")
 def block_api_root():
     return "Access to /api is not allowed", 403
@@ -423,6 +323,10 @@ def about():
 @app.context_processor
 def utility_processor():
     return dict(get_status_symbol=get_status_symbol)
+
+@app.route('/version')
+def version():
+    return __version__, 200
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))

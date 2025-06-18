@@ -5,7 +5,6 @@ A Flask-based classroom response system for getting instant feedback from studen
 ## Features
 - ✅ Student reactions (tick, cross, happy, etc.)
 - 📊 Multiple choice polling (A, B, C, D, E)
-- 🃏 Planning poker estimation
 - 📈 Real-time poll results
 - 🎯 Room-based sessions
 
@@ -16,22 +15,20 @@ A Flask-based classroom response system for getting instant feedback from studen
 pip install -r requirements.txt
 python app.py
 ```
-Visit http://localhost:8080
+Visit http://localhost:8000
 
 ### Deploy to Google Cloud Run
 ```bash
-# Production deployment
+# Deploy to Google Cloud
 ./deploy.sh
 
-# Testing deployment (multi-user mode)
-./deploy-test.sh
 ```
 
 ## Project Structure
 ```
 imikhaza/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies  
+├── app.py                # Main Flask application
+├── requirements.txt      # Python dependencies  
 ├── Dockerfile            # Container configuration
 ├── deploy.sh             # Production deployment script
 ├── deploy-test.sh        # Testing deployment script
@@ -43,7 +40,6 @@ imikhaza/
     ├── learner.html      # Student interface
     ├── tutor.html        # Teacher interface
     ├── poll.html         # Poll results
-    ├── poker.html        # Planning poker
     └── about.html        # About page
 ```
 
@@ -53,12 +49,11 @@ imikhaza/
 2. **Join as tutor**: Click "I'm the tutor" to get tutor view with student list
 3. **Students join**: Students visit `/ROOMCODE` and enter their name
 4. **Get feedback**: Students click reaction buttons, tutor sees responses
-5. **View results**: Visit `/ROOMCODE/poll` or `/ROOMCODE/poker` for statistics
+5. **View results**: Visit `/ROOMCODE/poll` or counts by status
 
 ## Environment Variables
 
-- `MULTI_USER_MODE=true` - Enables testing mode where each browser tab gets a unique learner ID
-- `DEBUG=true` - Alternative way to enable multi-user mode
+- `FLASK_DEBUG=true` - Show functionailty onlu used in development (like mock data)
 
 ## Security Features
 

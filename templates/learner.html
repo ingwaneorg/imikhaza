@@ -116,31 +116,6 @@
       </div>
     </div>
 
-    <div class="section" id="poker-section" style="visibility: {{ 'visible' if learner.name else 'hidden' }}">
-      <div class="row-gap"></div>
-      <div class="row">
-        <button class="poker" onclick="sendStatus('0')">0</button>
-        <span class="col-gap-small"></span>
-        <button class="poker" onclick="sendStatus('0.5')">&frac12;</button>
-        <span class="col-gap-small"></span>
-        <button class="poker" onclick="sendStatus('1')">1</button>
-        <span class="col-gap-small"></span>
-        <button class="poker" onclick="sendStatus('2')">2</button>
-        <span class="col-gap-small"></span>
-        <button class="poker" onclick="sendStatus('3')">3</button>
-        <span class="col-gap-small"></span>
-        <button class="poker" onclick="sendStatus('5')">5</button>
-        <span class="col-gap-small"></span>
-        <button class="poker" onclick="sendStatus('8')">8</button>
-        <span class="col-gap-small"></span>
-        <button class="poker" onclick="sendStatus('13')">13</button>
-        <span class="col-gap-small"></span>
-        <button class="poker" onclick="sendStatus('20')">20</button>
-        <span class="col-gap-small"></span>
-        <button class="poker" onclick="sendStatus('?')">?</button>
-      </div>
-    </div>
-
   </div>
 </div>
 {% endblock %}
@@ -207,7 +182,6 @@ function toggleSections(hasName) {
     document.getElementById('answer-section').style.visibility = visibility;
     document.getElementById('buttons-section').style.visibility = visibility;
     document.getElementById('clear-section').style.visibility = visibility;
-    document.getElementById('poker-section').style.visibility = visibility;
 }
 
 // Initialize visibility based on current name
