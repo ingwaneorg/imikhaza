@@ -10,9 +10,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Create static and templates directories
-RUN mkdir -p static templates
-
 # Expose port
 EXPOSE 8080
 
@@ -20,5 +17,5 @@ EXPOSE 8080
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
 
-# Run the application
-CMD ["python", "app.py"]
+# Use gunicorn for production (better than python app.py)
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
