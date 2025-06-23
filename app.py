@@ -302,6 +302,10 @@ def block_api_root():
 
 @app.route("/api/rooms")
 def api_rooms():
+    return jsonify(rooms)
+
+@app.route("/api/summary")
+def api_room_summary():
     room_summaries = []
 
     for room_code, room in rooms.items():
