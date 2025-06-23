@@ -14,7 +14,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'fallback-for-development')
 
 # Limit the number of rooms and number of active learners per room
 MAX_ROOMS = 10
-MAX_LEARNERS_PER_ROOM = 20
+MAX_LEARNERS_PER_ROOM = 40
 
 
 # In-memory storage
